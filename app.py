@@ -1,10 +1,13 @@
 # Written by Rikard Ed 2024-01-30
 
+# charging_simulation.py
+
 # 1 Charging profile without energy price
 # 2 charging profile with energy price
 import json, time
 import threading
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 # Energy_price in Öre per kWh incl VAT
 energy_price = [85.28, 70.86, 68.01, 67.95, 68.01, 85.04, 87.86, 100.26, 118.45, 116.61, 105.93, 91.95, 90.51, 90.34,
@@ -41,6 +44,7 @@ seconds_per_hour = 4
 global_lock = threading.Lock()
 
 app = Flask(__name__)
+CORS(app)
 
 
 def main_prg():
@@ -86,9 +90,10 @@ def station_info():
         charging_station_info = {"sim_time_hour": sim_hour, \
                                  "sim_time_min": sim_min, \
                                  "base_current_load": base_current_load, \
-                                 "battery_capacity_kWh": ev_batt_capacity_kWh
+                                 "battery_capacity_kWh": ev_batt_capacity_kWh, \
+                                 "ev_battery_charge_start_stopp": ev_battery_charge_start_stopp
                                  }
-        return (json.dumps(charging_station_info))
+        return (json.dumps(charging_station_info), {"Access-Control-Allow-orogin": "*"})
     else:
         return jsonify({'error': 'Unsupported HTTP method'})
 
